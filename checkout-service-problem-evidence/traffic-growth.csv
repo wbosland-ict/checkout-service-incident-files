@@ -1,0 +1,8 @@
+month,peak_checkout_requests_per_min,peak_db_active_connections,max_pool_size,note
+2026-03,330,24,40,
+2026-04,345,22,50,Capacity review 2026-04-02: pool raised 40 -> 50 (sized for ~350 req/min peak)
+2026-05,390,25,50,
+2026-06,440,27,50,Summer campaign start
+2026-07,462,27,50,Peak on 2026-07-07 before v2.14.0 deploy; ~40% above March
+2026-08,520 (forecast),31 (forecast),50,Back-to-school campaign
+2026-11,700 (forecast),41 (forecast),50,Black Friday forecast at current (v2.13.4) query profile

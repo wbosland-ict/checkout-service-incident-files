@@ -1,0 +1,33 @@
+# checkout-service production configuration (excerpt)
+# Source: config repo, environment "production", identical for v2.13.4 and v2.14.0
+
+datasource:
+  url: jdbc:postgresql://cart-items-db.prod.internal:5432/cart
+  pool:
+    max_pool_size: 50            # set at capacity review 2026-04-02
+    min_idle: 10
+    connection_timeout_ms: 5000  # max wait for a free connection
+    max_lifetime_ms: 1800000
+
+jpa:
+  open_in_view: false
+  default_batch_fetch_size: null # no batch fetching configured
+
+payment_gateway:
+  base_url: https://api.payment-gateway.example/v1
+  timeout_ms: 3000
+  retry:
+    max_attempts: 3
+    backoff: fixed
+    backoff_delay_ms: 200
+    jitter: false
+    retry_on: [timeout, 5xx, 429]
+  circuit_breaker:
+    enabled: false
+  idempotency_key:
+    enabled: false               # charge requests are not idempotent on retry
+
+client_retry:                    # web/app checkout front-end
+  max_attempts: 3
+  backoff_delay_ms: 500
+  retry_on: [504, 502]

@@ -2,7 +2,7 @@
 
 **Owner:** Checkout Platform Team
 **Last reviewed:** 2026-02-14
-**Status:** ⚠️ Not updated since payment-gateway migration or last capacity review — treat DB/connection-pool sections as unverified.
+**Next review due:** 2026-05-14
 
 ## Service overview
 
@@ -39,6 +39,13 @@ payment-gateway (3rd party).
 
 ## Rollback procedure
 
+A rollback to the previous stable version to restore service is part of
+handling a high priority incident and does not need a separate change
+request. Announce it in the Teams *Incidents* channel before you start and
+log it as an action in the TopDesk incident. If the rollback is a
+workaround (the underlying defect is still there), register a problem in
+TopDesk and link it to the incident before closing the incident.
+
 | Step | Purpose | Command |
 |---|---|---|
 | 1 | Identify current and previous stable versions | `kubectl -n checkout rollout history deployment/checkout-service` |
@@ -49,17 +56,11 @@ payment-gateway (3rd party).
 
 | When to escalate | Team | How to reach them | What to include |
 |---|---|---|---|
-| Issue traced to checkout-service itself (bad deploy, pod crash loop, config), or unresolved after 15 minutes | Checkout Platform Team lead | Page PagerDuty schedule `checkout-platform-primary` | Alert name, current impact (error rate/latency), what you've already tried |
-| Elevated errors/timeouts calling payment-gateway, or payment-gateway status page shows an incident | Payments integration on-call | Post in `#eng-payments` **and** page PagerDuty schedule `payments-primary` | Error codes/rates seen from payment-gateway, time window, checkout-service version |
-| DB connection pool saturation, slow queries, or other Postgres/infra-level symptoms | Database/infra on-call | Post in `#infra-oncall` **and** page PagerDuty schedule `db-infra-primary` | Pool utilization %, active/idle connection counts, relevant query/log excerpts |
+| Issue traced to checkout-service itself (bad deploy, pod crash loop, config), or unresolved after 15 minutes | Checkout Platform Team lead | Teams call to the on-call engineer on the *Checkout Platform* on-call rota **and** add operator group *Checkout Platform* to the TopDesk incident | TopDesk incident number, alert name, current impact (error rate/latency), what you've already tried |
+| Elevated errors/timeouts calling payment-gateway, or payment-gateway status page shows an incident | Payments integration on-call | Post in Teams *Engineering > Payments* **and** Teams call to the *Payments* on-call | TopDesk incident number, error codes/rates seen from payment-gateway, time window, checkout-service version |
+| DB connection pool saturation, slow queries, or other Postgres/infra-level symptoms | Database/infra on-call | Post in Teams *IT Operations > Infra* **and** Teams call to the *DB/Infra* on-call | TopDesk incident number, pool utilization %, active/idle connection counts, relevant query/log excerpts |
 
-Page via PagerDuty for anything actively impacting customers; use the Slack
-channel alone only for non-urgent updates or once the relevant on-call has
-already been paged.
-
----
-> **Gap note (intentional for this exercise):** This runbook has no
-> section for "DB connection pool saturation" and does not mention how to
-> check or safely adjust `max_pool_size`, nor any guidance on retry-storm
-> effects on downstream dependencies like payment-gateway. Part of
-> Exercise 3/4 is identifying and filling this gap.
+For high priority incidents (customers actively impacted), always **call**
+the on-call engineer via Teams; a channel post alone is only for non-urgent
+updates or once the on-call has been reached. Log every escalation and every
+action taken (including rollbacks) in the TopDesk incident.

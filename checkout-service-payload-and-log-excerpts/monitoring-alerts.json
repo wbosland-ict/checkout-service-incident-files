@@ -1,0 +1,67 @@
+[
+  {
+    "id": "ALT-10023841",
+    "source": "Grafana Alerting",
+    "notified_channel": "Teams: IT Operations > SRE Alerts",
+    "fired_at": "2026-07-07T10:06:02.884Z",
+    "status": "firing",
+    "severity": "critical",
+    "service": "checkout-service",
+    "summary": "High latency & elevated error rate",
+    "details": {
+      "condition": "p95_latency_ms > 2000 for 5 consecutive minutes AND error_rate_pct > 5",
+      "p95_latency_ms": 2140,
+      "error_rate_pct": 6.8
+    },
+    "runbook": "checkout-service-incident-files/checkout-service-runbook/checkout-service-runbook.md"
+  },
+  {
+    "id": "ALT-10023845",
+    "source": "Grafana Alerting",
+    "notified_channel": "Teams: IT Operations > SRE Alerts",
+    "fired_at": "2026-07-07T10:07:10.500Z",
+    "status": "firing",
+    "severity": "critical",
+    "service": "checkout-service-db",
+    "summary": "DB connection pool saturation",
+    "details": {
+      "condition": "active_connections / max_connections >= 1.0 for 3 consecutive minutes",
+      "active_connections": 50,
+      "max_connections": 50,
+      "duration_min": 3
+    },
+    "runbook": null
+  },
+  {
+    "id": "ALT-10023852",
+    "source": "Grafana Alerting",
+    "notified_channel": "Teams: IT Operations > SRE Alerts",
+    "fired_at": "2026-07-07T10:09:40.112Z",
+    "status": "firing",
+    "severity": "warning",
+    "service": "payment-gateway-client",
+    "summary": "Elevated 429 rate from payment-gateway",
+    "details": {
+      "condition": "429_count_per_min > 20 for 3 consecutive minutes",
+      "count_429_per_min": 85,
+      "note": "payment-gateway status page reports no incident; likely client-side traffic spike"
+    },
+    "runbook": null
+  },
+  {
+    "id": "ALT-10023860",
+    "source": "Grafana Alerting",
+    "notified_channel": "Teams: IT Operations > SRE Alerts",
+    "fired_at": "2026-07-07T10:11:00.000Z",
+    "status": "firing",
+    "severity": "info",
+    "service": "order-notification-service",
+    "summary": "Email send queue depth above warning threshold",
+    "details": {
+      "condition": "queue_depth > 500",
+      "queue_depth": 640,
+      "note": "Likely downstream effect of fewer completed orders reaching notification step; not a primary cause. Consider deprioritizing during triage."
+    },
+    "runbook": null
+  }
+]
