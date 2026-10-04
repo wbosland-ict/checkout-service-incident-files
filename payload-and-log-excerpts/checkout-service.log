@@ -57,11 +57,11 @@
 2026-07-07T10:03:12.821Z INFO  checkout-service pod=checkout-8a1d-e5 req_id=8f47 payment.call downstream=payment-gateway status=200 attempt=1 duration_ms=92
 2026-07-07T10:03:13.012Z INFO  checkout-service pod=checkout-8a1d-e5 req_id=8f47 POST /checkout/start status=200 duration_ms=724
 2026-07-07T10:03:44.221Z WARN  checkout-service pod=checkout-8a1d-c3 req_id=8f62 db.pool active_connections=45 max_connections=50 avg_hold_time_ms=340
-2026-07-07T10:04:10.556Z ERROR checkout-service pod=checkout-8a1d-d4 req_id=8f80 db.pool.acquire timeout_ms=5000 active_connections=50 max_connections=50 msg="ConnectionPoolTimeoutException: no free connection after 5000ms"
+2026-07-07T10:04:10.556Z ERROR checkout-service pod=checkout-8a1d-d4 req_id=8f80 db.pool.acquire timeout_ms=5000 active_connections=50 max_connections=50 msg="NpgsqlTimeoutException: Timeout after 5000ms waiting for a connection from the pool"
 2026-07-07T10:04:11.002Z ERROR checkout-service pod=checkout-8a1d-d4 req_id=8f80 POST /checkout/start status=504 duration_ms=5008
-2026-07-07T10:04:33.712Z ERROR checkout-service pod=checkout-8a1d-e5 req_id=8f91 db.pool.acquire timeout_ms=5000 active_connections=50 max_connections=50 msg="ConnectionPoolTimeoutException: no free connection after 5000ms"
+2026-07-07T10:04:33.712Z ERROR checkout-service pod=checkout-8a1d-e5 req_id=8f91 db.pool.acquire timeout_ms=5000 active_connections=50 max_connections=50 msg="NpgsqlTimeoutException: Timeout after 5000ms waiting for a connection from the pool"
 2026-07-07T10:04:34.100Z ERROR checkout-service pod=checkout-8a1d-e5 req_id=8f91 POST /checkout/start status=504 duration_ms=5011
-2026-07-07T10:05:02.440Z ERROR checkout-service pod=checkout-8a1d-c3 req_id=8fa0 db.pool.acquire timeout_ms=5000 active_connections=50 max_connections=50 msg="ConnectionPoolTimeoutException: no free connection after 5000ms"
+2026-07-07T10:05:02.440Z ERROR checkout-service pod=checkout-8a1d-c3 req_id=8fa0 db.pool.acquire timeout_ms=5000 active_connections=50 max_connections=50 msg="NpgsqlTimeoutException: Timeout after 5000ms waiting for a connection from the pool"
 2026-07-07T10:05:02.900Z INFO  checkout-service pod=checkout-8a1d-c3 req_id=8fa0 retry.scheduled attempt=1 delay_ms=200
 2026-07-07T10:05:03.150Z ERROR checkout-service pod=checkout-8a1d-c3 req_id=8fa0 POST /checkout/start status=504 duration_ms=5015
 2026-07-07T10:05:15.667Z WARN  checkout-service pod=checkout-8a1d-f6 req_id=8fb3 db.pool active_connections=50 max_connections=50 queued_requests=14
@@ -70,16 +70,16 @@
 2026-07-07T10:05:41.330Z ERROR checkout-service pod=checkout-8a1d-f6 req_id=8fc7 payment.call downstream=payment-gateway status=429 attempt=2 msg="Too Many Requests"
 2026-07-07T10:06:02.884Z ALERT checkout-service ALERT_FIRED name="High latency & elevated error rate" p95_latency_ms=2140 error_rate_pct=6.8
 2026-07-07T10:07:10.500Z ALERT checkout-service-db ALERT_FIRED name="DB connection pool saturation" active_connections=50 max_connections=50 duration_min=3
-2026-07-07T10:07:33.221Z ERROR checkout-service pod=checkout-8a1d-a7 req_id=8fe2 db.pool.acquire timeout_ms=5000 active_connections=50 max_connections=50 msg="ConnectionPoolTimeoutException: no free connection after 5000ms"
+2026-07-07T10:07:33.221Z ERROR checkout-service pod=checkout-8a1d-a7 req_id=8fe2 db.pool.acquire timeout_ms=5000 active_connections=50 max_connections=50 msg="NpgsqlTimeoutException: Timeout after 5000ms waiting for a connection from the pool"
 2026-07-07T10:07:59.004Z ERROR checkout-service pod=checkout-8a1d-a7 req_id=8fe9 payment.call downstream=payment-gateway status=429 attempt=1 msg="Too Many Requests"
 2026-07-07T10:08:20.771Z WARN  checkout-service pod=checkout-8a1d-b8 req_id=8ff5 db.pool active_connections=50 max_connections=50 queued_requests=22
 2026-07-07T10:08:45.330Z ERROR checkout-service pod=checkout-8a1d-b8 req_id=8005 POST /checkout/start status=504 duration_ms=5009
 2026-07-07T10:09:12.556Z ERROR checkout-service pod=checkout-8a1d-c9 req_id=800e payment.call downstream=payment-gateway status=429 attempt=1 msg="Too Many Requests"
-2026-07-07T10:09:33.812Z ERROR checkout-service pod=checkout-8a1d-c9 req_id=8021 db.pool.acquire timeout_ms=5000 active_connections=50 max_connections=50 msg="ConnectionPoolTimeoutException: no free connection after 5000ms"
+2026-07-07T10:09:33.812Z ERROR checkout-service pod=checkout-8a1d-c9 req_id=8021 db.pool.acquire timeout_ms=5000 active_connections=50 max_connections=50 msg="NpgsqlTimeoutException: Timeout after 5000ms waiting for a connection from the pool"
 2026-07-07T10:10:05.114Z WARN  checkout-service pod=checkout-8a1d-d0 req_id=8033 db.pool active_connections=50 max_connections=50 queued_requests=31
 2026-07-07T10:10:41.220Z ERROR checkout-service pod=checkout-8a1d-d0 req_id=8041 payment.call downstream=payment-gateway status=429 attempt=2 msg="Too Many Requests"
 2026-07-07T10:11:15.667Z ERROR checkout-service pod=checkout-8a1d-e1 req_id=8055 POST /checkout/start status=504 duration_ms=5013
-2026-07-07T10:12:02.331Z ERROR checkout-service pod=checkout-8a1d-e1 req_id=8067 db.pool.acquire timeout_ms=5000 active_connections=50 max_connections=50 msg="ConnectionPoolTimeoutException: no free connection after 5000ms"
+2026-07-07T10:12:02.331Z ERROR checkout-service pod=checkout-8a1d-e1 req_id=8067 db.pool.acquire timeout_ms=5000 active_connections=50 max_connections=50 msg="NpgsqlTimeoutException: Timeout after 5000ms waiting for a connection from the pool"
 2026-07-07T10:13:40.900Z WARN  checkout-service pod=checkout-8a1d-f2 req_id=8081 db.pool active_connections=50 max_connections=50 queued_requests=38
 2026-07-07T10:15:02.221Z ERROR checkout-service pod=checkout-8a1d-f2 req_id=8098 payment.call downstream=payment-gateway status=429 attempt=1 msg="Too Many Requests"
 2026-07-07T10:16:33.554Z ERROR checkout-service pod=checkout-8a1d-a3 req_id=80a2 POST /checkout/start status=504 duration_ms=5010

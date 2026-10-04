@@ -2,16 +2,16 @@
 # Source: config repo, environment "production", identical for v2.13.4 and v2.14.0
 
 datasource:
-  url: jdbc:postgresql://cart-items-db.prod.internal:5432/cart
+  connection_string: "Host=cart-items-db.prod.internal;Port=5432;Database=cart"
   pool:
     max_pool_size: 50            # set at capacity review 2026-04-02
     min_idle: 10
     connection_timeout_ms: 5000  # max wait for a free connection
     max_lifetime_ms: 1800000
 
-jpa:
-  open_in_view: false
-  default_batch_fetch_size: null # no batch fetching configured
+efcore:
+  lazy_loading_proxies_enabled: true
+  query_split_behavior: single_query # no query splitting configured
 
 payment_gateway:
   base_url: https://api.payment-gateway.example/v1

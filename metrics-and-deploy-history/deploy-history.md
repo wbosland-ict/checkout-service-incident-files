@@ -2,7 +2,7 @@
 
 | Version | Deployed at (UTC) | Author | Changelog |
 |---|---|---|---|
-| v2.14.0 | 2026-07-07 09:58 | ci-bot (PR #4821, approved by J. Alvarez) | Refactored cart items retrieval to use lazy-loaded associations (ORM), removed manual `JOIN FETCH` query. Cleans up ~80 lines of manual mapping code. |
+| v2.14.0 | 2026-07-07 09:58 | ci-bot (PR #4821, approved by J. Alvarez) | Refactored cart items retrieval to use lazy-loaded navigation properties (EF Core), removed manual eager-loading (`.Include()`) query. Cleans up ~80 lines of manual mapping code. |
 | v2.13.4 | 2026-07-03 14:12 | ci-bot (PR #4790) | Bump logging library to 3.2.1 (security patch). No behavior change. |
 | v2.13.3 | 2026-06-29 11:05 | ci-bot (PR #4772) | Add feature flag for "buy now pay later" option at checkout (disabled by default). |
 | v2.13.2 | 2026-06-24 08:40 | ci-bot (PR #4755) | Fix currency rounding bug for JPY orders. |

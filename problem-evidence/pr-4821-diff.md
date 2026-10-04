@@ -1,72 +1,93 @@
-# PR #4821 — "Refactor cart items retrieval to lazy-loaded ORM associations"
+# PR #4821 — "Refactor cart items retrieval to lazy-loaded EF Core navigation properties"
 
 **Merged:** 2026-07-07 09:41 UTC — **Released as:** checkout-service v2.14.0
 **Reviewers:** 1 approval (J. Alvarez). CI checks: unit tests ✅, integration
 tests ✅, lint ✅. No performance/load test stage in pipeline.
 
 **PR description (excerpt):**
-> Removes ~80 lines of manual mapping code. The ORM now loads cart items and
-> their products through the entity associations, which is cleaner and
+> Removes ~80 lines of manual mapping code. EF Core now loads cart items and
+> their products through the navigation properties, which is cleaner and
 > easier to maintain. Needed as groundwork for the "saved carts" feature
 > (v2.15.0).
 
 ## Diff excerpt
 
 ```diff
---- a/src/main/java/com/shopfast/checkout/cart/CartRepository.java
-+++ b/src/main/java/com/shopfast/checkout/cart/CartRepository.java
-@@ -18,22 +18,9 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
+--- a/src/ShopFast.Checkout/Cart/CartRepository.cs
++++ b/src/ShopFast.Checkout/Cart/CartRepository.cs
+@@ -15,22 +15,9 @@ public class CartRepository : ICartRepository
+ {
+     private readonly CheckoutDbContext _dbContext;
 
--    @Query("""
--        SELECT c FROM Cart c
--        JOIN FETCH c.items i
--        JOIN FETCH i.product p
--        WHERE c.id = :cartId
--        """)
--    Optional<Cart> findByIdWithItemsAndProducts(@Param("cartId") Long cartId);
-+    Optional<Cart> findById(Long cartId);
+-    public async Task<Cart?> GetByIdWithItemsAndProductsAsync(long cartId)
+-    {
+-        return await _dbContext.Carts
+-            .Include(c => c.Items)
+-                .ThenInclude(i => i.Product)
+-            .FirstOrDefaultAsync(c => c.Id == cartId);
+-    }
++    public async Task<Cart?> GetByIdAsync(long cartId)
++    {
++        return await _dbContext.Carts.FindAsync(cartId);
++    }
+ }
 ```
 
 ```diff
---- a/src/main/java/com/shopfast/checkout/cart/CartItem.java
-+++ b/src/main/java/com/shopfast/checkout/cart/CartItem.java
-@@ -31,7 +31,7 @@ public class CartItem {
+--- a/src/ShopFast.Checkout/Cart/CartItem.cs
++++ b/src/ShopFast.Checkout/Cart/CartItem.cs
+@@ -28,7 +28,8 @@ public class CartItem
+     public int Quantity { get; set; }
 
--    @ManyToOne(fetch = FetchType.EAGER)
-+    @ManyToOne(fetch = FetchType.LAZY)
-     @JoinColumn(name = "product_id")
-     private Product product;
+     public long ProductId { get; set; }
+-    public Product Product { get; set; }
++    // Lazy-loading proxy: fetched on first access instead of being
++    // eager-loaded by the repository query (requires UseLazyLoadingProxies()).
++    public virtual Product Product { get; set; }
+ }
 ```
 
 ```diff
---- a/src/main/java/com/shopfast/checkout/CheckoutService.java
-+++ b/src/main/java/com/shopfast/checkout/CheckoutService.java
-@@ -52,14 +52,12 @@ public class CheckoutService {
+--- a/src/ShopFast.Checkout/CheckoutService.cs
++++ b/src/ShopFast.Checkout/CheckoutService.cs
+@@ -49,14 +49,15 @@ public class CheckoutService
+ {
 
-+    // Needed so lazy associations can be loaded (open_in_view is disabled)
-+    @Transactional
-     public CheckoutResult start(Long cartId) {
--        List<LineItem> lines = cartReader.readLineItems(cartId); // @Transactional(readOnly), connection released on return
-+        Cart cart = cartRepository.findById(cartId).orElseThrow(CartNotFoundException::new);
-+        List<LineItem> lines = cart.getItems().stream()
-+            .map(i -> new LineItem(i.getProduct().getSku(), i.getProduct().getPrice(), i.getQuantity()))
-+            .toList();
-         Reservation reservation = inventoryClient.reserve(lines);
-         PaymentResult payment = paymentClient.charge(reservation, lines);
-         return orderWriter.create(cartId, reservation, payment);
++    // Needed so lazy-loaded navigation properties can still be read;
++    // keeps the DbContext (and its DB connection) open for the whole method.
+     public async Task<CheckoutResult> StartAsync(long cartId)
+     {
+-        var lines = await _cartReader.ReadLineItemsAsync(cartId); // short-lived scope, connection released on return
++        using var transaction = await _dbContext.Database.BeginTransactionAsync();
++        var cart = await _cartRepository.GetByIdAsync(cartId)
++            ?? throw new CartNotFoundException();
++        var lines = cart.Items
++            .Select(i => new LineItem(i.Product.Sku, i.Product.Price, i.Quantity))
++            .ToList();
+         var reservation = await _inventoryClient.ReserveAsync(lines);
+         var payment = await _paymentClient.ChargeAsync(reservation, lines);
+-        return await _orderWriter.CreateAsync(cartId, reservation, payment);
++        var result = await _orderWriter.CreateAsync(cartId, reservation, payment);
++        await transaction.CommitAsync();
++        return result;
      }
+ }
 ```
 
 ```diff
---- a/src/main/java/com/shopfast/checkout/cart/CartReader.java
+--- a/src/ShopFast.Checkout/Cart/CartReader.cs
 +++ /dev/null
--@Component
--class CartReader {
--    @Transactional(readOnly = true)
--    List<LineItem> readLineItems(Long cartId) {
--        Cart cart = cartRepository.findByIdWithItemsAndProducts(cartId)
--            .orElseThrow(CartNotFoundException::new);
--        return cartMapper.toLineItems(cart);   // manual mapping
+-public class CartReader
+-{
+-    private readonly ICartRepository _cartRepository;
+-
+-    public async Task<List<LineItem>> ReadLineItemsAsync(long cartId)
+-    {
+-        // Own short-lived DbContext scope; connection released as soon as
+-        // the mapped line items are returned.
+-        var cart = await _cartRepository.GetByIdWithItemsAndProductsAsync(cartId)
+-            ?? throw new CartNotFoundException();
+-        return CartMapper.ToLineItems(cart);   // manual mapping
 -    }
 -}
 ```
