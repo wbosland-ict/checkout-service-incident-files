@@ -13,7 +13,7 @@
       "p95_latency_ms": 2140,
       "error_rate_pct": 6.8
     },
-    "runbook": "checkout-service-incident-files/checkout-service-runbook/checkout-service-runbook.md"
+    "runbook": "checkout-service-incident-files/runbook/checkout-service-runbook.md"
   },
   {
     "id": "ALT-10023845",
