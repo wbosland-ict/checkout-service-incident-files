@@ -5,9 +5,9 @@ datasource:
   connection_string: "Host=cart-items-db.prod.internal;Port=5432;Database=cart"
   pool:
     max_pool_size: 50            # set at capacity review 2026-04-02
-    min_idle: 10
+    min_pool_size: 10
     connection_timeout_ms: 5000  # max wait for a free connection
-    max_lifetime_ms: 1800000
+    connection_lifetime_s: 1800
 
 efcore:
   lazy_loading_proxies_enabled: true
